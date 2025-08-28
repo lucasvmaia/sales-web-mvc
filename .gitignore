@@ -1,0 +1,39 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build Folders
+bin/
+obj/
+out/
+
+# Rider IDE
+.idea/
+
+# ASP.NET Core
+appsettings.Development.json
+appsettings.Local.json
+
+# Logs
+*.log
+
+# NuGet
+*.nupkg
+*.snupkg
+packages/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Node/npm (caso use frontend)
+node_modules/
+wwwroot/lib/
+
+# Backup files
+*.bak
+*.tmp
+*.swp
+*.DS_Store
