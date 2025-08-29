@@ -8,7 +8,7 @@ namespace SalesWebMVC.Models
         public DateTime Date { get; set; }
         public double Amount { get; set; }
         public SalesStatus SalesStatus { get; set; }
-        public Seller Seller { get; set; }
+        public Seller? Seller { get; set; }
 
         public SalesRecord()
         {
