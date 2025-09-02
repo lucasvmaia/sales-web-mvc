@@ -59,7 +59,16 @@ namespace SalesWebMVC.Controllers
             {
                 return View("Error", new ErrorViewModel { RequestId = e.Message });
             }
+        }
 
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var getDetailsId = await _sellerService.FindByIdAsync(id.Value);
+            if (getDetailsId == null) return NotFound();
+
+            return View(getDetailsId);
         }
     }
 }

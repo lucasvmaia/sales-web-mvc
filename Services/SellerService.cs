@@ -17,7 +17,7 @@ namespace SalesWebMVC.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task<Seller?> FindByIdAsync(int id) => await _context.Seller.FirstOrDefaultAsync(p => p.Id == id);
+        public async Task<Seller?> FindByIdAsync(int id) => await _context.Seller.Include(p => p.Department).FirstOrDefaultAsync(p => p.Id == id);
 
         public async Task RemoveAsync(int id)
         {
