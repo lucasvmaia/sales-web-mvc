@@ -1,4 +1,5 @@
-﻿using SalesWebMVC.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using SalesWebMVC.Data;
 using SalesWebMVC.Models;
 
 namespace SalesWebMVC.Services
@@ -8,12 +9,24 @@ namespace SalesWebMVC.Services
         private readonly SalesWebMVCContext _context;
         public SellerService(SalesWebMVCContext context) => _context = context;
 
-        public List<Seller> FindAll() => _context.Seller.ToList();
+        public async Task<List<Seller>> FindAllAsync() => await _context.Seller.ToListAsync();
 
-        public void Insert(Seller seller)
+        public async Task InsertAsync(Seller seller)
         {
-            _context.Add(seller);
-            _context.SaveChangesAsync();
+            await _context.AddAsync(seller);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<Seller?> FindByIdAsync(int id) => await _context.Seller.FirstOrDefaultAsync(p => p.Id == id);
+
+        public async Task RemoveAsync(int id)
+        {
+            var getRemoveId = await _context.Seller.FindAsync(id) ?? throw new KeyNotFoundException($"Vendedor ID {id} não encontrado");
+            bool hasSales = await _context.SalesRecord.AnyAsync(h => h.Seller!.Id == id);
+            if (hasSales) throw new InvalidOperationException("Não é possível excluir um vendedor que possui vendas registradas.");
+
+            _context.Seller.Remove(getRemoveId);
+            await _context.SaveChangesAsync();
         }
 
     }
