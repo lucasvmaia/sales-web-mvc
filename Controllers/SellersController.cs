@@ -4,6 +4,7 @@ using SalesWebMVC.Models;
 using SalesWebMVC.Models.ViewModels;
 using SalesWebMVC.Services;
 using SalesWebMVC.Services.Exceptions;
+using System.Diagnostics;
 
 namespace SalesWebMVC.Controllers
 {
@@ -40,10 +41,10 @@ namespace SalesWebMVC.Controllers
 
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null) return NotFound();
+            if (id == null) return RedirectToAction(nameof(Error), new { message = "Id not provided" });
 
             var getDeleteId = await _sellerService.FindByIdAsync(id.Value);
-            if (getDeleteId == null) return NotFound();
+            if (getDeleteId == null) return RedirectToAction(nameof(Error), new { message = "Id not found" });
 
             return View(getDeleteId);
         }
@@ -59,26 +60,26 @@ namespace SalesWebMVC.Controllers
             }
             catch (InvalidOperationException e)
             {
-                return View("Error", new ErrorViewModel { RequestId = e.Message });
+                return RedirectToAction(nameof(Error), new { message = e.Message });
             }
         }
 
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null) return NotFound();
+            if (id == null) return RedirectToAction(nameof(Error), new { message = "Id not provided" });
 
             var getDetailsId = await _sellerService.FindByIdAsync(id.Value);
-            if (getDetailsId == null) return NotFound();
+            if (getDetailsId == null) return RedirectToAction(nameof(Error), new { message = "Id not found" });
 
             return View(getDetailsId);
         }
 
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null) return NotFound();
+            if (id == null) return RedirectToAction(nameof(Error), new { message = "Id not provided" });
 
             var getEditId = await _sellerService.FindByIdAsync(id.Value);
-            if (getEditId == null) return NotFound();
+            if (getEditId == null) return RedirectToAction(nameof(Error), new { message = "Id not found" });
 
             List<Department> departments = await _departmentService.FindAllAsync();
             SellerFormViewModel sellerFormViewModel = new() { Seller = getEditId, Departments = departments };
@@ -89,22 +90,28 @@ namespace SalesWebMVC.Controllers
         [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> Edit(int id, Seller seller)
         {
-            if (id != seller.Id) return BadRequest();
+            if (id != seller.Id) return RedirectToAction(nameof(Error), new { message = "Id mismatch" });
 
             try
             {
                 await _sellerService.Update(seller);
                 return RedirectToAction(nameof(Index));
             }
-            catch (NotFoundException)
+            catch (ApplicationException e)
             {
-                return NotFound();
-            }
-            catch (DbConcurrencyException)
-            {
-                return BadRequest();
+                return RedirectToAction(nameof(Error), new { message = e.Message });
             }
 
+        }
+
+        public IActionResult Error(string message)
+        {
+            var viewModel = new ErrorViewModel
+            {
+                Message = message,
+                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+            };
+            return View(viewModel);
         }
     }
 }

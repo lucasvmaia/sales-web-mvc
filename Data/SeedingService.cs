@@ -1,4 +1,5 @@
-﻿using SalesWebMVC.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using SalesWebMVC.Models;
 using SalesWebMVC.Models.Enums;
 
 namespace SalesWebMVC.Data
@@ -11,9 +12,9 @@ namespace SalesWebMVC.Data
 
         public async Task SeedAsync()
         {
-            if (_context.Department.Any() ||
-                _context.Seller.Any() ||
-                _context.SalesRecord.Any())
+            if (await _context.Department.AnyAsync() ||
+                await _context.Seller.AnyAsync() ||
+                await _context.SalesRecord.AnyAsync())
             {
                 return;
             }
