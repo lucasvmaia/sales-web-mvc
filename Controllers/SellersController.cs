@@ -65,7 +65,11 @@ namespace SalesWebMVC.Controllers
                 await _sellerService.RemoveAsync(id);
                 return RedirectToAction(nameof(Index));
             }
-            catch (InvalidOperationException e)
+            catch (Exception e) when (
+                e is InvalidOperationException ||
+                e is NotFoundException ||
+                e is IntegrityException
+            )
             {
                 return RedirectToAction(nameof(Error), new { message = e.Message });
             }
@@ -108,7 +112,7 @@ namespace SalesWebMVC.Controllers
 
             try
             {
-                await _sellerService.Update(seller);
+                await _sellerService.UpdateAsync(seller);
                 return RedirectToAction(nameof(Index));
             }
             catch (ApplicationException e)

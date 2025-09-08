@@ -22,15 +22,22 @@ namespace SalesWebMVC.Services
 
         public async Task RemoveAsync(int id)
         {
-            var getRemoveId = await _context.Seller.FindAsync(id) ?? throw new KeyNotFoundException($"Vendedor ID {id} não encontrado");
-            bool hasSales = await _context.SalesRecord.AnyAsync(h => h.Seller!.Id == id);
-            if (hasSales) throw new InvalidOperationException("Não é possível excluir um vendedor que possui vendas registradas.");
+            try
+            {
+                var seller = await _context.Seller.FindAsync(id) ?? throw new NotFoundException($"Vendedor ID {id} não encontrado.");
+                var hasSales = await _context.SalesRecord.AnyAsync(h => h.Seller!.Id == id);
+                if (hasSales) throw new IntegrityException("Não é possível excluir um vendedor que possui vendas registradas.");
 
-            _context.Seller.Remove(getRemoveId);
-            await _context.SaveChangesAsync();
+                _context.Seller.Remove(seller);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex) when (ex is not NotFoundException && ex is not IntegrityException)
+            {
+                throw;
+            }
         }
 
-        public async Task Update(Seller seller)
+        public async Task UpdateAsync(Seller seller)
         {
             var exists = await _context.Seller.AnyAsync(s => s.Id == seller.Id);
             if (!exists) throw new NotFoundException("Id not found");
