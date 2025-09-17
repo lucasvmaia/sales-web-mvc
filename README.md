@@ -10,7 +10,7 @@ Projeto de estudo desenvolvido em .NET 8 / C#, utilizando Entity Framework Core,
 
 # Tecnologias utilizadas
 
-* .NET 6 / C#
+* .NET 8 / C#
 
 * Entity Framework Core (Code First + Migrations)
 
